@@ -1,0 +1,7 @@
+---
+applications:
+- name: allforoneshop
+  buildpack: https://github.com/drnic/staticfile-buildpack.git
+  memory: 64M
+  instances: 1
+  path: dist/public
