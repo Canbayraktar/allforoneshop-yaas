@@ -89,15 +89,6 @@
                             </div>
                         </form>
 
-
-                         <!-- ADJUSTED_AS_NEEDED : A button and feedback for our Tips Service-->
-                                                    <div >
-                                                      <button id="tips-button" class="btn btn-primary " ng-click="getRandomTip()">What do you think, Mr Tip?<br>
-                                                      {{randomTip}}</button><br>
-                                                    </div>
-                        <!-- END_OF_ADJUSTED_AS_NEEDED : A button and feedback for our Tips Service-->
-
-
                         <!-- unavialable button -->
                         <div class="row" ng-if="!product.prices[0]">
                             <div class="col-md-8 col-md-offset-2">
@@ -112,6 +103,9 @@
                             </div>
                         </div>
 
+                        <div class="col-md-12 col-lg-12">
+                            <a ng-click="addToWishlist()">Add to Wishlist</a>
+                        </div>
                     </div>
                 </div>
             </div>

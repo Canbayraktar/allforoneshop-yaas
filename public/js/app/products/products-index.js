@@ -18,5 +18,6 @@ angular.module('ds.products', [
     'ds.shared',
     'ds.cart',
     'ui.bootstrap',
-    'ds.tips'  // ADJUSTED_AS_NEEDED : the 'products' module will be using our 'tips' module; so introduce it as a dependency
+    'ds.tips',
+    'ds.wishlist'  // ADJUSTED_AS_NEEDED : the 'products' module will be using our 'tips' module; so introduce it as a dependency
 ]);

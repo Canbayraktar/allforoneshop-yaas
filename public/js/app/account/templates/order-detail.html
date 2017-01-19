@@ -26,22 +26,6 @@
             <!-- AREA -->
             <div class="col-md-4 col-sm-12 col-xs-12">
                 <div class="">
-                    <span class="area-headline">
-                        {{'SHIPPING_ADDRESS' | translate}}
-                    </span>
-                    <address>
-                        {{order.shippingAddress.contactName}}<br>
-                        <div ng-if="order.shippingAddress.companyName">{{order.shippingAddress.companyName}}<br></div>
-                        {{order.shippingAddress.street}}<div ng-if="order.shippingAddress.streetAppendix">, {{order.shippingAddress.streetAppendix}}</div><br>
-                        {{order.shippingAddress.city}}, {{order.shippingAddress.state}} {{order.shippingAddress.zipCode}}<br>
-                        {{order.shippingAddress.country}}<br>
-                        {{order.shippingAddress.contactPhone}}<br>
-                    </address>
-                </div>
-            </div>
-            <!-- AREA -->
-            <div class="col-md-4 col-sm-12 col-xs-12">
-                <div class="">
   		<span class="area-headline">
   			{{'BILLING_ADDRESS' | translate}}
   		</span>
@@ -78,13 +62,6 @@
             <div class="col-md-2 col-sm-3">
                 <button id="downloadInvoice" ng-click="downloadInvoice()" class="btn btn-primary cancel-order">Invoice</button>
             </div>
-        </div>
-        <div ng-repeat="shipment in order.shipments">
-            <div translate="SHIPPED_BY_ON" translate-compile
-                 translate-values="{carrier: '{{shipment.carrier}}', shippedDate: '{{shipment.shippedDate}}'}"></div>
-            <br>
-            <div ng-if="shipment.trackingNumber" translate="TRACKING_NUMBER" translate-compile
-                 translate-values="{trackingNumber: '{{shipment.trackingNumber}}'}"></div>
         </div>
     </section>
     <section class="white clearfix orderItemsContainer" ng-cloak>
@@ -162,12 +139,6 @@
 
                         <td class="text-right">
                             {{order.totalPrice - order.tax.total.amount - order.shipping.total.amount + (order.discounts[0].amount || 0 ) | currency: currencySymbol}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>{{'SHIPPING' | translate}}</td>
-                        <td class="text-right">
-                            {{order.shipping.total.amount | currency: currencySymbol}}
                         </td>
                     </tr>
                     <tr ng-if="order.discounts && order.discounts[0].amount != 0">

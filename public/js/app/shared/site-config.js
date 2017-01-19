@@ -42,6 +42,9 @@ angular.module('ds.shared')
                         initialPageSize: 6
                     }
                 },
+                wishlist: {
+                    baseUrl: 'http://localhost:8080/'
+                },
 
                 cart: {
                     baseUrl: 'https://' + apiPath + '/hybris/cart/v1/' + tenantId
@@ -110,7 +113,11 @@ angular.module('ds.shared')
                     baseUrl: 'http://localhost:8080'
                 },
                 invoice: {
-                    baseUrl: 'http://localhost:8080/java-jersey-wishlist/generate/'
+                    baseUrl: 'http://localhost:8080/allforoneinvoice/generate/'
+                },
+
+                wishlist: {
+                    baseUrl: 'https://canwishlistx.cfapps.us10.hana.ondemand.com/'
                 }
                 // END_OF_ADJUSTED_AS_NEEDED: Added a new endpoint for the Tips Service
 

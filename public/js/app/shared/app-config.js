@@ -52,12 +52,12 @@ angular.module('ds.appconfig', [])
 
         clientId: function() {
             // Dynamic ClientId is configured and replaced by build script, see gruntfile.
-            return /*StartClientId*/ 'UYJqQPwVVkNGDPIzl25CWYcTnelNvidA' /*EndClientId*/;
+            return /*StartClientId*/ 'KfJ3DeWFybNcGn5u7dZfpIuRzJ3tPlN4' /*EndClientId*/;
         },
 
         redirectURI: function() {
             // Dynamic RedirectURI is configured and replaced by build script, see gruntfile.
-            return /*StartRedirectURI*/ 'https://api.eu.yaas.io/candemo/allforoneshopservice/v1' /*EndRedirectURI*/;
+            return /*StartRedirectURI*/ 'https://api.eu.yaas.io/candemo/allforoneshopservice/v2' /*EndRedirectURI*/;
         }
 
 

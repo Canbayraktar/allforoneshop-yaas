@@ -17,12 +17,8 @@ angular.module('ds.products')
      * Listens to the 'cart:updated' event.  Once the item has been added to the cart, and the updated
      * cart information has been retrieved from the service, the 'cart' view will be shown.
      */
-    .controller('ProductDetailCtrl', ['$scope', '$rootScope',
-        'TipsSvc', // ADJUSTED_AS_NEEDED : the products detail view will be using our TipsSvc; so introduce it as a dependency
-        'CartSvc', 'product', 'lastCatId', 'GlobalData', 'CategorySvc','$filter', '$modal', 'shippingZones', 'Notification', 'ProductExtensionHelper', 'variants', 'variantPrices', 'productFactory',
-        function($scope, $rootScope,
-            TipsSvc, // ADJUSTED_AS_NEEDED : the products detail view will be using our TipsSvc; so introduce it as a dependency
-            CartSvc, product, lastCatId, GlobalData, CategorySvc, $filter, $modal, shippingZones, Notification, ProductExtensionHelper, variants, variantPrices, productFactory) {
+    .controller('ProductDetailCtrl', ['$scope', '$rootScope', 'WishlistSvc', 'CartSvc', 'product', 'lastCatId', 'GlobalData', 'CategorySvc','$filter', '$modal', 'shippingZones', 'Notification', 'ProductExtensionHelper', 'variants', 'variantPrices', 'productFactory',
+        function($scope, $rootScope, WishlistSvc, CartSvc, product, lastCatId, GlobalData, CategorySvc, $filter, $modal, shippingZones, Notification, ProductExtensionHelper, variants, variantPrices, productFactory) {
             var modalInstance;
 
             $scope.activeTab = 'description';
@@ -159,6 +155,21 @@ angular.module('ds.products')
                 }
             };
 
+            $scope.addToWishlist = function () {
+                var newWishlist = {
+                    id: 'defaultWishlistId',
+                    owner: 'wishlistOwner@hybris.com',
+                    title: 'defaultWishlistTitle',
+                    items: [
+                        {
+                            product: $scope.product.id,
+                            amount: $scope.productDetailQty
+                        }
+                    ]
+                };
+                WishlistSvc.createWishlist(newWishlist);
+            };
+
 
             function filterPricesForVariant(variantId) {
                 return variantPrices.filter(function (price) {
@@ -176,22 +187,4 @@ angular.module('ds.products')
                     $scope.product = productFactory.fromProduct(product.product, product.prices, false);
                 }
             };
-            // ADJUSTED_AS_NEEDED : A button on the product detail page will call this method
-            $scope.getRandomTip = function () {
-               TipsSvc.getRandomTip().then(
-                function(response) {
-                    if (response.plain().length>0){
-                        var i =  Math.floor(Math.random() * response.plain().length);
-                        $scope.randomTip = response.plain()[i].tip;
-                    } else {
-                         $scope.randomTip ="No tips available - decide yourself :O"
-                    }
-                },
-                function(response) {
-                    $scope.randomTip ="No tips available - decide yourself :O"
-                }
-            );
-        };
-        // END_OF_ADJUSTED_AS_NEEDED : A button on the product detail page will call this method
-
 }]);
