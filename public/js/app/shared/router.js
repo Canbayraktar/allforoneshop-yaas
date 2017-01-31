@@ -202,12 +202,27 @@ angular.module('ds.router', [])
                             return CartSvc.getLocalCart();
                         }],
                         order: ['CheckoutSvc', function (CheckoutSvc) {
-                            return CheckoutSvc.getDefaultOrder();
+                            return CheckoutSvc.getDefaultOrder('sandbox');
                         }],
                         shippingZones: ['ShippingSvc', 'initialized', function (ShippingSvc, initialized) {
                             if (initialized) {
                                 return ShippingSvc.getSiteShippingZones();
                             }
+                        }]
+                    }
+                })
+
+                .state('base.checkout.success', {
+                    url: '/success?:paymentId&:token&:PayerID',
+                    views: {
+                        'main@': {
+                            templateUrl: 'js/app/checkout/templates/checkout-success.html',
+                            controller: 'CheckoutSuccessCtrl'
+                        }
+                    },
+                    resolve: {
+                        token: ['$stateParams', 'CheckoutSvc', function ($stateParams, CheckoutSvc) {
+                            return CheckoutSvc.prepareForSuccessTheCheckoutWithPaypal($stateParams.paymentId, $stateParams.PayerID, $stateParams.paymentId);
                         }]
                     }
                 })
@@ -375,5 +390,3 @@ angular.module('ds.router', [])
             $locationProvider.hashPrefix('!');
         }
     ]);
-
-

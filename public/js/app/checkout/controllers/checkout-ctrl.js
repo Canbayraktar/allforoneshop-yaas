@@ -92,23 +92,94 @@ angular.module('ds.checkout')
             };
 
             var populateBillTo = function(address){
-                $scope.order.shipTo.id = address.id;
-                $scope.order.shipTo.contactName = address.contactName;
-                $scope.order.shipTo.companyName = address.companyName;
-                $scope.order.shipTo.address1 = address.street;
-                $scope.order.shipTo.address2 = address.streetAppendix;
+                if(typeof address !== 'undefine'){
+                    $scope.order.shipTo.id = address.id;
+                    $scope.order.shipTo.contactName = address.contactName;
+                    $scope.order.shipTo.companyName = address.companyName;
+                    $scope.order.shipTo.address1 = address.street;
+                    $scope.order.shipTo.address2 = address.streetAppendix;
 
-                //checkout requires 2 character country codes
-                if (address.country === 'USA') {
-                    address.country = 'US';
+                    $scope.order.shipTo.country = address.country;
+                    $scope.order.shipTo.city = address.city;
+                    $scope.order.shipTo.state = address.state;
+                    $scope.order.shipTo.zipCode = address.zipCode;
+                    $scope.order.shipTo.contactPhone = address.contactPhone;
+
+                    //checkout requires 2 character country codes
+                    if (address.country === 'USA') {
+                        address.country = 'US';
+                    }
+
+/*                    $scope.order.shippingAddress = address;
+
+                    $scope.order.shippingAddress.country = $scope.order.shipTo.country;
+                    $scope.order.shippingAddress.city = $scope.order.shipTo.city;
+                    $scope.order.shippingAddress.state = $scope.order.shipTo.state;
+                    $scope.order.shippingAddress.zipCode = $scope.order.shipTo.zipCode;
+                    $scope.order.shippingAddress.contactPhone = $scope.order.shipTo.contactPhone;
+
+
+                    $scope.order.shippingAddress.id = $scope.order.shipTo.id;
+                    $scope.order.shippingAddress.contactName = $scope.order.shipTo.contactName;
+                    $scope.order.shippingAddress.companyName = $scope.order.shipTo.companyName;
+                    $scope.order.shippingAddress.street = $scope.order.shipTo.address1;
+                    $scope.order.shippingAddress.streetAppendix = $scope.order.shipTo.address2;
+
+
+                    $scope.order.billingAddress = address;
+
+                    $scope.order.billingAddress.country = $scope.order.shipTo.country;
+                    $scope.order.billingAddress.city = $scope.order.shipTo.city;
+                    $scope.order.billingAddress.state = $scope.order.shipTo.state;
+                    $scope.order.billingAddress.zipCode = $scope.order.shipTo.zipCode;
+                    $scope.order.billingAddress.contactPhone = $scope.order.shipTo.contactPhone;
+
+
+                    $scope.order.billingAddress.id = $scope.order.shipTo.id;
+                    $scope.order.billingAddress.contactName = $scope.order.shipTo.contactName;
+                    $scope.order.billingAddress.companyName = $scope.order.shipTo.companyName;
+                    $scope.order.billingAddress.street = $scope.order.shipTo.address1;
+                    $scope.order.billingAddress.streetAppendix = $scope.order.shipTo.address2;
+
+                    $scope.order.addresses = $scope.order.billingAddress;
+                    $scope.order.addresses.country = $scope.order.shipTo.country;
+                    $scope.order.addresses.city = $scope.order.shipTo.city;
+                    $scope.order.addresses.state = $scope.order.shipTo.state;
+                    $scope.order.addresses.zipCode = $scope.order.shipTo.zipCode;
+                    $scope.order.addresses.contactPhone = $scope.order.shipTo.contactPhone;
+
+                    $scope.order.addresses.id = $scope.order.shipTo.id;
+                    $scope.order.addresses.contactName = $scope.order.shipTo.contactName;
+                    $scope.order.addresses.companyName = $scope.order.shipTo.companyName;
+                    $scope.order.addresses.street = $scope.order.shipTo.address1;
+                    $scope.order.addresses.streetAppendix = $scope.order.shipTo.address2;
+
+
+                    $scope.cart.addresses = $scope.order.billingAddress;
+
+                    $scope.cart.addresses = $scope.order.billingAddress;
+                    $scope.cart.addresses.country = $scope.order.shipTo.country;
+                    $scope.cart.addresses.city = $scope.order.shipTo.city;
+                    $scope.cart.addresses.state = $scope.order.shipTo.state;
+                    $scope.cart.addresses.zipCode = $scope.order.shipTo.zipCode;
+                    $scope.cart.addresses.contactPhone = $scope.order.shipTo.contactPhone;
+
+                    $scope.cart.addresses.id = $scope.order.shipTo.id;
+                    $scope.cart.addresses.contactName = $scope.order.shipTo.contactName;
+                    $scope.cart.addresses.companyName = $scope.order.shipTo.companyName;
+                    $scope.cart.addresses.street = $scope.order.shipTo.address1;
+                    $scope.cart.addresses.streetAppendix = $scope.order.shipTo.address2;*/
+
+
+
+                    //checkout requires 2 character country codes
+                    if (address.country === 'USA') {
+                        address.country = 'US';
+                    }
+
+                    $scope.order.cart = $scope.cart;
+                    $scope.$emit('localizedAddress:updated', address.country, 'shipping');
                 }
-                $scope.order.shipTo.country = address.country;
-                $scope.order.shipTo.city = address.city;
-                $scope.order.shipTo.state = address.state;
-                $scope.order.shipTo.zipCode = address.zipCode;
-                $scope.order.shipTo.contactPhone = address.contactPhone;
-
-                $scope.$emit('localizedAddress:updated', address.country, 'shipping');
             };
 
             var getAddresses = function() {
@@ -142,7 +213,7 @@ angular.module('ds.checkout')
                             }
                             $scope.order.billTo.contactName = fullName;
                         }
-                    });
+                    }, function(failure){console.log(failure)} );
                 }
             };
 
@@ -268,6 +339,11 @@ angular.module('ds.checkout')
                 $scope.$emit('localizedAddress:updated', selectedBillingAddress.country, 'billing');
             };
 
+            var setBillToSameAsShipToForPaypal = function () {
+                angular.copy($scope.order.billTo, $scope.order.shipTo);
+                angular.copy($scope.order.shipTo, $scope.order.billTo);
+            };
+
             var clearBillTo = function(){
                 selectedBillingAddress = {};
                 $scope.order.billTo = {};
@@ -337,7 +413,6 @@ angular.module('ds.checkout')
              * @param error message
              */
             function onStripeValidationFailure(error) {
-
                 var msg = error.message;
                 if (error.type === 'card_error') {
                     if (error.code && isFieldAttributableStripeError(error)) {
@@ -371,7 +446,6 @@ angular.module('ds.checkout')
 
             /** Advances the application state to the confirmation page. */
             var checkoutSuccessHandler = function goToConfirmationPage(order) {
-
                 var piwikOrderDetails = {
                     orderId: order.orderId,
                     checkoutId: order.checkoutId,
@@ -426,7 +500,6 @@ angular.module('ds.checkout')
                     $scope.order.cart = $scope.cart;
                     $scope.order.shipping = angular.fromJson($scope.shippingCost);
                     CheckoutSvc.checkout($scope.order).then(checkoutSuccessHandler, checkoutErrorHandler);
-
                 } else {
                     $scope.showPristineErrors = true;
                     $scope.message = 'PLEASE_CORRECT_ERRORS';
@@ -520,6 +593,8 @@ angular.module('ds.checkout')
                 }
             };
 
+
+
             $scope.disableAddress = function (country) {
                 if (!$scope.isShipToCountry(country) && $scope.shippingZones.length && $scope.isDialog && $scope.addType !== 'billing') {
                     return true;
@@ -567,6 +642,17 @@ angular.module('ds.checkout')
                 $location.hash(id);
                 $anchorScroll();
                 $location.hash(old);
+            };
+
+            $scope.checkoutWithPaypal = function(cart) {
+                getAddresses();
+                getAccount();
+                console.log(cart);
+                $scope.order.cart = $scope.cart;
+                sessionStorage.setItem("orderForPaypal", angular.toJson($scope.order));
+                console.log(sessionStorage.getItem("orderForPaypal"));
+                
+                CheckoutSvc.checkoutWithPaypalSrv($scope.cart);
             };
 
             $scope.previewOrderDesktop = function (shipToValid, billToValid) {

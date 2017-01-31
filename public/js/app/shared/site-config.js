@@ -118,6 +118,11 @@ angular.module('ds.shared')
 
                 wishlist: {
                     baseUrl: 'https://canwishlistx.cfapps.us10.hana.ondemand.com/'
+                },
+
+                paypal: {
+                    baseUrl: 'http://localhost:8081/allforone-paypal'
+                    //baseUrl: 'https://a41paypal.cfapps.us10.hana.ondemand.com'
                 }
                 // END_OF_ADJUSTED_AS_NEEDED: Added a new endpoint for the Tips Service
 

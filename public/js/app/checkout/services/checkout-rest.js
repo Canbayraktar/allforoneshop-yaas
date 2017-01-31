@@ -15,11 +15,12 @@
 /** REST configuration for services related to checkout. */
 angular.module('ds.checkout')
     .factory('CheckoutREST', ['Restangular', 'SiteConfigSvc', 'GlobalData', function(Restangular, siteConfig, GlobalData){
+        
         return {
             /** Configures main checkout API endpoint.*/
             Checkout: Restangular.withConfig(function(RestangularConfigurer) {
-							RestangularConfigurer.setBaseUrl(siteConfig.apis.checkout.baseUrl);
-
+				RestangularConfigurer.setBaseUrl(siteConfig.apis.checkout.baseUrl);
+                console.log(siteConfig.apis.checkout.baseUrl);
                 RestangularConfigurer.addFullRequestInterceptor(function(element, operation, route, url, headers, params, httpConfig) {
                     return {
                         element: element,
@@ -30,16 +31,36 @@ angular.module('ds.checkout')
                 });
             }),
 
+            CheckoutWithPaypal: Restangular.withConfig(function(RestangularConfigurer) {
+                RestangularConfigurer.setBaseUrl(siteConfig.apis.paypal.baseUrl);
+                var resultx = function(params){
+                                        console.log(params);
+                            }
+                            RestangularConfigurer.addFullRequestInterceptor(function(element, operation, route, url, headers, params, httpConfig) {
+                                return {
+                                    element: element,
+                                    params: params,
+                                    headers: _.extend(headers, {'hybris-currency': GlobalData.getCurrencyId()}),
+                                    httpConfig: httpConfig,
+                                    resultx: resultx(headers)
+                                };
+                            });
+            }), 
+
             /** Configures main shipping costs API endpoint.*/
             ShippingCosts: Restangular.withConfig(function(RestangularConfigurer) {
 							RestangularConfigurer.setBaseUrl(siteConfig.apis.shippingCosts.baseUrl);
+                var resultx = function(params){
+                                        console.log(params);
+                            }
                             RestangularConfigurer.addFullRequestInterceptor(function(element, operation, route, url, headers, params, httpConfig) {
 
                                 return {
                                     element: element,
                                     params: params,
                                     headers: _.extend(headers, {'hybris-currency': GlobalData.getCurrencyId()}),
-                                    httpConfig: httpConfig
+                                    httpConfig: httpConfig,
+                                    resultx: resultx(headers)
                                 };
                             });
             }),

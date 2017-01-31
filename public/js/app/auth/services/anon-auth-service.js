@@ -27,7 +27,6 @@ angular.module('ds.auth')
                  * If request already in progress, does nothing.
                  */
                 getToken: function () {
-
                     if (!inProgress) {
                         inProgress = true;
 

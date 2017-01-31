@@ -47,7 +47,7 @@ angular.module('ds.appconfig', [])
 
         hybrisScopes: function() {
             // Dynamic ClientId is configured and replaced by build script, see gruntfile.
-            return /*StartClient*/ 'hybris.order_read' /*EndClient*/;
+            return /*StartClient*/ 'hybris.order_read hybris.order_view_history' /*EndClient*/;
         },
 
         clientId: function() {

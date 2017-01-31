@@ -19,6 +19,7 @@ angular.module('ds.confirmation')
         ($scope, $stateParams, OrderDetailSvc, ProductSvc,  GlobalData, isAuthenticated, $rootScope) {
 
         $scope.entity = $stateParams.entity;
+        console.log($scope.entity);
         $scope.accountSuccess = false;
         if ($scope.entity === 'order') {
             $scope.orderInfo = {};
@@ -66,7 +67,10 @@ angular.module('ds.confirmation')
             $scope.accountSuccess = true;
             $scope.isAuthenticated = true;
         });
-
+var millisecondsToWait = 500;
+setTimeout(function() {
+    // Whatever you want to do after the wait
+}, millisecondsToWait);
         $scope.$on('$destroy', unbindConfirmAccount);
 
     }]);

@@ -45,6 +45,7 @@ angular.module('ds.account')
              */
             getAddresses: function() {
                 var addressesPromise = AuthREST.Customers.all('me').all('addresses').getList();
+                console.log(addressesPromise);
                 return addressesPromise;
             },
 

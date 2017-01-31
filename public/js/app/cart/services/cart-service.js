@@ -342,6 +342,15 @@ angular.module('ds.cart')
                     return refreshCart(cart.id ? cart.id : null);
                 },
 
+                getCartByCartId: function (cartId) {
+                    var params = { siteCode: GlobalData.getSiteCode() };
+                   return CartREST.Cart.one('carts', cartId).get(params).then(function(result){
+                        alert('oks');
+                        console.log(result);
+                        return result;
+                    });
+                },
+
                 /**
                  * Retrieve any existing cart that there might be for an authenticated user, and merges it with
                  * any content in the current cart.
