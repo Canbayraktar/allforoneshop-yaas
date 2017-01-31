@@ -202,7 +202,7 @@ angular.module('ds.router', [])
                             return CartSvc.getLocalCart();
                         }],
                         order: ['CheckoutSvc', function (CheckoutSvc) {
-                            return CheckoutSvc.getDefaultOrder('sandbox');
+                            return CheckoutSvc.getDefaultOrder('paypal');
                         }],
                         shippingZones: ['ShippingSvc', 'initialized', function (ShippingSvc, initialized) {
                             if (initialized) {
@@ -222,7 +222,7 @@ angular.module('ds.router', [])
                     },
                     resolve: {
                         token: ['$stateParams', 'CheckoutSvc', function ($stateParams, CheckoutSvc) {
-                            return CheckoutSvc.prepareForSuccessTheCheckoutWithPaypal($stateParams.paymentId, $stateParams.PayerID, $stateParams.paymentId);
+                            return CheckoutSvc.prepareForSuccessTheCheckoutWithPaypal($stateParams.paymentId, $stateParams.PayerID, $stateParams.token);
                         }]
                     }
                 })

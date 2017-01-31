@@ -121,8 +121,8 @@ angular.module('ds.shared')
                 },
 
                 paypal: {
-                    baseUrl: 'http://localhost:8081/allforone-paypal'
-                    //baseUrl: 'https://a41paypal.cfapps.us10.hana.ondemand.com'
+                    //baseUrl: 'http://localhost:8081/allforone-paypal'
+                    baseUrl: 'https://api.us.yaas.io/allforone/a41paypalservice/v2/'
                 }
                 // END_OF_ADJUSTED_AS_NEEDED: Added a new endpoint for the Tips Service
 

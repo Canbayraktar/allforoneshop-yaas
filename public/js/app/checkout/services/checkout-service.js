@@ -226,8 +226,8 @@ angular.module('ds.checkout')
             checkoutWithPaypalSrv : function(cart){
                 console.log(cart);
                 var paypalValues = {
-                    "clientId": "",
-                    "clientSecretId": "",
+                    "clientId": "AeruG19el8CaACWUYEDMyvBXbZlQ07rnPhN807wCMkR1ws2i59StX5CAB2jSopoC43XULj4ZOKXvFOVZ",
+                    "clientSecretId": "EP1Qz0Dv3fc4bmZkzfMvO9QXWwxtpxTSlwiJyoROItqjaq76gGTw3Odtd5StKPScQiFq4Wn5PyFiSPal",
                     "mode": "sandbox",
                     "totalAmount": cart.totalPrice.amount,
                     "currency": cart.totalPrice.currency,
@@ -244,7 +244,7 @@ angular.module('ds.checkout')
             },
 
             prepareForSuccessTheCheckoutWithPaypal : function(paymentId, payerId, token){
-                var result = CheckoutREST.CheckoutWithPaypal.one('pay').one("paymentId", paymentId).one("payerId", payerId).one("client", "")
+                var result = CheckoutREST.CheckoutWithPaypal.one('pay').one("paymentId", paymentId).one("payerId", payerId).one("client", "AeruG19el8CaACWUYEDMyvBXbZlQ07rnPhN807wCMkR1ws2i59StX5CAB2jSopoC43XULj4ZOKXvFOVZ")
                 .get().then(function(result){
                     console.log(result);
                 }, function(failure){
@@ -260,7 +260,7 @@ angular.module('ds.checkout')
                 order = angular.fromJson(order);
                 newOrder.cartId = order && order.cart && order.cart.id ? order.cart.id : null;
                 newOrder.payment = order.payment;
-                newOrder.payment.customAttributes.token = 'tk_1023498';
+                //newOrder.payment.customAttributes.token = 'tk_1023498';
                 newOrder.currency = order.cart.currency;
                 if (order.shipping) {
                     newOrder.shipping = {
