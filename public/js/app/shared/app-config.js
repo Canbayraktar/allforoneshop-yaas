@@ -23,7 +23,7 @@ angular.module('ds.appconfig', [])
 
         dynamicDomain: function(){
             // Dynamic Domain is generated and replaced by build script, see gruntfile.
-            return /*StartDynamicDomain*/ 'api.yaas.io' /*EndDynamicDomain*/;
+            return /*StartDynamicDomain*/ 'api.us.yaas.io' /*EndDynamicDomain*/;
         },
 
         storeTenant: function(){
@@ -47,7 +47,7 @@ angular.module('ds.appconfig', [])
 
         hybrisScopes: function() {
             // Dynamic ClientId is configured and replaced by build script, see gruntfile.
-            return /*StartClient*/ 'hybris.order_read hybris.order_view_history' /*EndClient*/;
+            return /*StartClient*/ 'hybris.order_read hybris.order_view_history hybris.order_post hybris.order_create' /*EndClient*/;
         },
 
         clientId: function() {
@@ -57,7 +57,7 @@ angular.module('ds.appconfig', [])
 
         redirectURI: function() {
             // Dynamic RedirectURI is configured and replaced by build script, see gruntfile.
-            return /*StartRedirectURI*/ 'https://api.eu.yaas.io/candemo/allforoneshopservice/v2' /*EndRedirectURI*/;
+            return /*StartRedirectURI*/ 'https://allforoneshop.cfapps.us10.hana.ondemand.com' /*EndRedirectURI*/;
         }
 
 
