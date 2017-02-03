@@ -21,7 +21,7 @@ module.exports = function (grunt) {
         // NEEDS_ADJUSTING - Your YaaS Clients Client_id
         CLIENT_ID = 'KfJ3DeWFybNcGn5u7dZfpIuRzJ3tPlN4',
         // NEEDS_ADUSTING - can be anything but needs to be exactly the same as the Redirect_URL
-        REDIRECT_URI = 'https://api.eu.yaas.io/candemo/allforoneshopservice/v2',
+        REDIRECT_URI = 'https://allforoneshop.cfapps.us10.hana.ondemand.com',
    
         PROJECT_ID_PATH = './public/js/app/shared/app-config.js',
         PROD_DOMAIN = 'api.yaas.io',
