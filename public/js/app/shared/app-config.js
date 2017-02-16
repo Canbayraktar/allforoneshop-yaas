@@ -52,11 +52,11 @@ angular.module('ds.appconfig', [])
 
         clientId: function() {
             // Dynamic ClientId is configured and replaced by build script, see gruntfile.
-            return /*StartClientId*/ '' /*EndClientId*/;
+            return /*StartClientId*/ 'KfJ3DeWFybNcGn5u7dZfpIuRzJ3tPlN4' /*EndClientId*/;
         },
 
         clientSecret: function(){
-                return '';
+                return '0BDnfUkmw4NrVxRx';
         },
 
         redirectURI: function() {
