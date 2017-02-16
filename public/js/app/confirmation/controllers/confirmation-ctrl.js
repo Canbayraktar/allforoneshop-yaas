@@ -19,7 +19,6 @@ angular.module('ds.confirmation')
         ($scope, $stateParams, OrderDetailSvc, ProductSvc,  GlobalData, isAuthenticated, $rootScope) {
 
         $scope.entity = $stateParams.entity;
-        console.log($scope.entity);
         $scope.accountSuccess = false;
         if ($scope.entity === 'order') {
             $scope.orderInfo = {};

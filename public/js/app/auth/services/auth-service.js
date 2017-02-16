@@ -21,8 +21,27 @@ angular.module('ds.auth')
 
             function loginAndSetToken(user) {
                 return AuthREST.Customers.all('login').customPOST(user).then(function (response) {
+                    setScoppedToken(user);
                     return TokenSvc.setToken(response.accessToken, user ? user.email : null);
                 });
+            }
+
+            function setScoppedToken(user){
+                var client = {
+                grant_type : "client_credentials",
+                client_id : appConfig.clientId(),
+                client_secret: appConfig.clientSecret(),
+                token_type: "Bearer",
+                scope: appConfig.hybrisScopes()
+                };
+                var client_encoded = $.param(client);
+
+                return AuthREST.Token.one('token').customPOST(client_encoded ,undefined, undefined, {'Content-Type': "application/x-www-form-urlencoded; charset=UTF-8"})
+                .then(function(result){
+                    TokenSvc.setCustomToken(result.access_token, user ? user.email : null);
+                    return result.access_token;//TokenSvc.setToken(result.access_token, user ? user.email : null);
+                    }
+                );
             }
 
             /** Call this function once a Facebook OAuth token has been obtained.
@@ -243,6 +262,7 @@ angular.module('ds.auth')
                 /** Returns true if there is a user specific OAuth token cookie for the current tenant.*/
                 isAuthenticated: function () {
                     var token = TokenSvc.getToken();
+                    //settings.hybrisAuthorization = TokenSvc.getToken().getAccessToken();
                     return !!token.getAccessToken() && !!token.getUsername() && token.getTenant() === appConfig.storeTenant();
                 },
 

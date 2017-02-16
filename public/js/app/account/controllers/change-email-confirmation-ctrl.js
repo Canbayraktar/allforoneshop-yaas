@@ -28,7 +28,6 @@ angular.module('ds.account')
                     //Message that email is changed successfully
                     $scope.confirmed = true;
                 }, function (error) {
-                    console.log(error);
                     //Message that there is error, and to try again or etc?
                     $scope.error = $translate.instant('EDIT_EMAIL_SOMETHING_WENT_WRONG');
                 });

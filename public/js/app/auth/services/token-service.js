@@ -61,6 +61,12 @@ angular.module('ds.auth')
                 ipCookie(settings.accessCookie, JSON.stringify(token), {expirationUnit: 'seconds', expires: expiresIn ? expiresIn : defaultExpirySeconds});
             },
 
+
+            setCustomToken: function(accessToken, userName, expiresIn) {
+                var token = new Token(userName, accessToken, appConfig.storeTenant());
+                ipCookie(settings.customAccessCookie, JSON.stringify(token), {expirationUnit: 'seconds', expires: expiresIn ? expiresIn : defaultExpirySeconds});
+            },
+
             /** Returns a Token object with the functions getUsername() and getAccessToken(). */
             getToken: function() {
                 var tokenCookie = ipCookie(settings.accessCookie);
@@ -72,10 +78,19 @@ angular.module('ds.auth')
                     }
                 }
                 return new Token(null, null, null);
-            }
+            },
 
+            getCustomToken: function() {
+                var tokenCookie = ipCookie(settings.customAccessCookie);
+                if(tokenCookie){
+                    if(tokenCookie.tenant === appConfig.storeTenant()){
+                        return new Token(tokenCookie.userName, tokenCookie.accessToken, tokenCookie.tenant);
+                    } else { // existing cookie associated with different tenant - invalidate
+                        ipCookie.remove(settings.customAccessCookie);
+                    }
+                }
+                return new Token(null, null, null);
+            },
         };
-
         return TokenSvc;
-
     }]);

@@ -5,7 +5,6 @@ angular.module('ds.wishlist')
         function(WishlistREST){
             return {
                 createWishlist: function (newWishlist) {
-                	console.log(newWishlist);
                     WishlistREST.Wishlist.all('wishlists').post(newWishlist);
                 }
             };

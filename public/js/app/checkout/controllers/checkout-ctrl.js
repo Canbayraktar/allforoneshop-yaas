@@ -213,7 +213,7 @@ angular.module('ds.checkout')
                             }
                             $scope.order.billTo.contactName = fullName;
                         }
-                    }, function(failure){console.log(failure)} );
+                    });
                 }
             };
 
@@ -474,6 +474,9 @@ angular.module('ds.checkout')
                     onCheckoutFailure(error.error);
                 } else if (error.type === CheckoutSvc.ERROR_TYPES.stripe) {
                     onStripeValidationFailure(error.error);
+                } else if (error.type === CheckoutSvc.ERROR_TYPES.paypal) {
+                    console.log("Paypal Ödeme Hatası");
+                    console.log(error.type);
                 }
             };
 
@@ -592,9 +595,7 @@ angular.module('ds.checkout')
                     $scope.order.shipTo.contactName = fullName;
                 }
             };
-
-
-
+            
             $scope.disableAddress = function (country) {
                 if (!$scope.isShipToCountry(country) && $scope.shippingZones.length && $scope.isDialog && $scope.addType !== 'billing') {
                     return true;
@@ -644,16 +645,61 @@ angular.module('ds.checkout')
                 $location.hash(old);
             };
 
-            $scope.checkoutWithPaypal = function(cart) {
-                getAddresses();
-                getAccount();
-                console.log(cart);
-                $scope.order.cart = $scope.cart;
-                sessionStorage.setItem("orderForPaypal", angular.toJson($scope.order));
-                console.log(sessionStorage.getItem("orderForPaypal"));
-                
-                CheckoutSvc.checkoutWithPaypalSrv($scope.cart);
+            function asyncFunction (values, cb) {
+                var deferredCart = $q.defer();
+                setTimeout(() => {
+                    var order = sessionStorage.getItem("orderForPaypal");
+
+                    $scope.order = angular.fromJson(order);
+                    //$scope.order.cart = values[2];
+                    sessionStorage.setItem("orderForPaypal", angular.toJson($scope.order));
+                    CheckoutSvc.complateOrderWithPaypal($scope.order, null).then(function (order){return deferredCart.resolve(order)})
+                }, 100);
+              return deferredCart.promise;
+            }
+
+            $scope.checkoutWithPaypal = function() {
+                    var promises = [];
+                    promises.push(getAddresses());
+                    promises.push(getAccount());
+                    promises.push(CartSvc.getCart());
+                    promises.push(AccountSvc.account());
+
+                    $q.all(promises).then(values => {
+                        $scope.order.cartx = {};
+                        $scope.order.cartx.customer = values[3];
+                        $scope.order.cartx = values[2];
+                        sessionStorage.setItem("orderForPaypal", angular.toJson($scope.order));
+                        CheckoutSvc.checkoutWithPaypalSrv($scope.order.cart);
+                }).catch(reason => { 
+                  console.log(reason);
+                });
             };
+
+            var checkoutSuccessHandlerForPaypal = function goToConfirmationPage(order) {
+                var piwikOrderDetails = {
+                    orderId: order.id,
+                    checkoutId: order.checkoutId,
+                    cart: $scope.cart
+                };
+                /**
+                 * It is possible for a checkout to go through, but the order placement itself will fail.  If this
+                 * is the case we still want to show the user the confirmation page, but instead of displaying
+                 * order details, it will let the user know that the checkout passed but the order was not placed.
+                 */
+                var entity = order.id ? 'order' : 'checkout';
+                var id = order.id ? order.id : order.checkoutId;
+                //Send data to piwik
+                $rootScope.$emit('order:placed', piwikOrderDetails);
+
+                //Reset cart
+                
+                 setTimeout( function() {CheckoutSvc.resetCart();$state.go('base.confirmation', {id: id, entity: entity})}, 1200);
+            };
+
+            function sleep(ms) {
+              return new Promise(resolve => setTimeout(resolve, ms));
+            }
 
             $scope.previewOrderDesktop = function (shipToValid, billToValid) {
                 previewOrder(shipToValid, billToValid).then(function () {

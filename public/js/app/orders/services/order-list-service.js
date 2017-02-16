@@ -18,7 +18,6 @@ angular.module('ds.orders')
         var getOrders = function (parms) {
             var ordersPromise = OrdersREST.Orders.all('orders').getList(parms);
             ordersPromise.then(function(response) {
-                console.log(response[0].entries[0].product.name);
                 if (response.headers) {
                     GlobalData.orders.meta.total = parseInt(response.headers[settings.headers.paging.total], 10) || 0;
                 }

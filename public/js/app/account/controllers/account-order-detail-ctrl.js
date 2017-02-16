@@ -15,7 +15,6 @@
 angular.module('ds.account')
     .controller('AccountOrderDetailCtrl', ['$scope', 'order', '$stateParams', 'GlobalData', '$modal', 'OrderInvoiceSvc',
         function($scope, order, $stateParams, GlobalData, $modal, OrderInvoiceSvc) {
-
         $scope.order = order;
         $scope.order.id = $stateParams.orderId;
         $scope.currencySymbol = GlobalData.getCurrencySymbol($scope.order.currency);

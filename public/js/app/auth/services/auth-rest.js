@@ -28,9 +28,11 @@ angular.module('ds.auth')
                     return result;
                 });
                 RestangularConfigurer.setBaseUrl(siteConfig.apis.customers.baseUrl);
+            }),
+
+            Token: Restangular.withConfig(function(RestangularConfigurer) {
+                RestangularConfigurer.setBaseUrl(siteConfig.apis.auth2.baseUrl);
+                Restangular.setDefaultHeaders({});
             })
-
         };
-
-
     }]);

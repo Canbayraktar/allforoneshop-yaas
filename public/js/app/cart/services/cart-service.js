@@ -14,8 +14,8 @@
 
 angular.module('ds.cart')
 
-    .factory('CartSvc', ['$rootScope', 'CartREST','ProductSvc', 'AccountSvc', '$q', 'GlobalData', '$location',
-        function ($rootScope, CartREST, ProductSvc, AccountSvc, $q, GlobalData,$location) {
+    .factory('CartSvc', ['$rootScope', 'CartREST', 'AuthREST', 'TokenSvc', 'ProductSvc', 'AccountSvc', 'settings', 'appConfig', '$q', 'GlobalData', '$location',
+        function ($rootScope, CartREST, AuthREST, TokenSvc, ProductSvc, AccountSvc, settings, appConfig, $q, GlobalData,$location) {
 
             // Prototype for outbound "update cart item" call
             var Item = function (product, price, qty) {
@@ -87,15 +87,17 @@ angular.module('ds.cart')
             function refreshCart(cartId, updateSource, closeCartAfterTimeout) {
                 var defCart = $q.defer();
                 var defCartTemp = $q.defer();
+                var defCartx = $q.defer();
+                var promises = [];
+                var items;
+                var cart;
 
                 var params = { siteCode: GlobalData.getSiteCode() };
-
                 CartREST.Cart.one('carts', cartId).get(params).then(function (response) {
                     cart = response.plain();
                     if (cart.siteCode !== GlobalData.getSiteCode()) {
                         CartREST.Cart.one('carts', cart.id).one('changeSite').customPOST({ siteCode: GlobalData.getSiteCode() }).finally(function () {
                             if (!!GlobalData.customerAccount) {
-
                                 params = angular.extend(params, { customerId: GlobalData.customerAccount.customerNumber });
 
                                 CartREST.Cart.one('carts', cartId).get(params).then(function (response) {
@@ -120,7 +122,6 @@ angular.module('ds.cart')
                     }
                     defCartTemp.promise.then(function (curCart) {
                         defCart.resolve(curCart);
-
                     }, function () {
                         cart.error = true;
                     });
@@ -136,55 +137,69 @@ angular.module('ds.cart')
                     defCart.resolve(cart);
                 });
                 defCart.promise.then(function () {
-
-                    var items =  (cart.items ? cart.items : []);
+                    items =  (cart.items ? cart.items : []);
+                    //cart.items = [];
 
                     if(!_.isEmpty(items)){
                       var productList = getProductIdsFromCart(items);
+                      //ProductSvc.queryProductList({q:'id:('+productList+')'}).then(function(res){
+                        //var products = res.plain();
+                        
+                    var itemsProcessed = 0;
+                    
+                    items.forEach((item, index, array) => {
+                         promises.push(asyncFunction(item, () => {
+                            itemsProcessed++;
+                      }));
+                     });
+                    };
 
-                      ProductSvc.queryProductList({q:'id:('+productList+')'}).then(function(res){
-                        var products = res.plain();
-                        _.forEach(items, function(item){
-                          if(item.itemYrn){
+                    var itemsX = [];
 
-                            var split = item.itemYrn.split(';');
+                    $q.all(promises).then(function (resultx){
+                        resultx.forEach((result, index, array) => {
+                        if(result){
+                            itemsX.push(result);
+                        }});
 
-                            var prod = _.find(products, {id:split[1]});
+                        cart.items = items;
 
-                            item.product = {
-                              id:prod.id,
-                              name:prod.name,
-                              images:prod.media,
-                              sku:prod.code
-                            };
-
-                            if(_.contains(item.itemYrn, 'product-variant')){
-                              ProductSvc.getProductVariant({productId:split[1],variantId:split[2]}).then(function(variant){
-
-                                item.variants=[];
-                                _.forEach(variant.options, function(ele){
-                                  for (var key in ele) {
-                                    item.variants.push(key+': '+ ele[key] );
-                                  }
-                                });
-
-                                if(_.isArray(variant.media) && _.size(variant.media) > 0){
-                                    item.product.images = variant.media;
-                                    item.product.code = variant.code;
-                                }
-                                if(variant.name) {
-                                  item.product.name = variant.name;
-                                }
-                              });
-                            }
-                          }
-                        });
-                      });
-                    }
-
+                        var cartX = angular.copy(cart);;
+                        cartX.items = [];
+                        cartX.items = itemsX;
+                        sessionStorage.setItem("cartForPaypal", angular.toJson(cartX));
+                        defCartx.resolve(resultx);
+                    });
+                  
                     $rootScope.$emit('cart:updated', { cart: cart, source: updateSource, closeAfterTimeout: closeCartAfterTimeout });
                 });
-                return defCart.promise;
+                return defCartx.promise;
+            }
+
+            function asyncFunction (item, cb) {
+                var deferredCart = $q.defer();
+              setTimeout(() => {
+                if(item.itemYrn){
+                    item.product = {};
+                    var split = item.itemYrn.split(';');
+                    //var prod = _.find(products, {id:split[1]});
+                    if(_.contains(item.itemYrn, 'product:product')){
+                       ProductSvc.getProductById(split[1]).then(function(response){
+                            item.product = response;
+                            deferredCart.resolve(item);
+                       });
+                    }
+
+                    if(_.contains(item.itemYrn, 'product-variant')){
+                       ProductSvc.getProductVariant({productId:split[1],variantId:split[2]}).then(function(response){
+                            item.product = response;
+                            deferredCart.resolve(item);
+                       });
+                    };
+
+                  }
+              }, 1000);
+              return deferredCart.promise;
             }
 
             function mergeAnonymousCartIntoCurrent(anonCart) {
@@ -300,6 +315,11 @@ angular.module('ds.cart')
                 return items;
             }
 
+            function isAuthenticated() {
+                var token = TokenSvc.getCustomToken();
+                return !!token.getAccessToken() && !!token.getUsername() && token.getTenant() === appConfig.storeTenant();
+            }
+
             /*
              TODO:
              this function is only necessary because the cart mashup does not directly consume the coupon as
@@ -342,13 +362,8 @@ angular.module('ds.cart')
                     return refreshCart(cart.id ? cart.id : null);
                 },
 
-                getCartByCartId: function (cartId) {
-                    var params = { siteCode: GlobalData.getSiteCode() };
-                   return CartREST.Cart.one('carts', cartId).get(params).then(function(result){
-                        alert('oks');
-                        console.log(result);
-                        return result;
-                    });
+                removeCart: function (){
+                    CartREST.Cart.one('carts', cart.id).customDELETE().then();
                 },
 
                 /**
@@ -359,7 +374,7 @@ angular.module('ds.cart')
                     var deferred = $q.defer();
                     // store existing anonymous cart
                     var anonCart = cart;
-
+//GlobalData.customerAccount.customerNumber
                     // retrieve any cart associated with the authenticated user
                     CartREST.Cart.one('carts', null).get({ customerId: customerId, siteCode: GlobalData.getSiteCode() }).then(function (authUserCart) {
                         // there is an existing cart - update scope instance

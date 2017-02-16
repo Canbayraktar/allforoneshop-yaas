@@ -20,7 +20,6 @@ angular.module('ds.checkout')
             /** Configures main checkout API endpoint.*/
             Checkout: Restangular.withConfig(function(RestangularConfigurer) {
 				RestangularConfigurer.setBaseUrl(siteConfig.apis.checkout.baseUrl);
-                console.log(siteConfig.apis.checkout.baseUrl);
                 RestangularConfigurer.addFullRequestInterceptor(function(element, operation, route, url, headers, params, httpConfig) {
                     return {
                         element: element,
@@ -33,52 +32,41 @@ angular.module('ds.checkout')
 
             CheckoutWithPaypal: Restangular.withConfig(function(RestangularConfigurer) {
                 RestangularConfigurer.setBaseUrl(siteConfig.apis.paypal.baseUrl);
-                var resultx = function(params){
-                                        console.log(params);
-                            }
-                            RestangularConfigurer.addFullRequestInterceptor(function(element, operation, route, url, headers, params, httpConfig) {
-                                return {
-                                    element: element,
-                                    params: params,
-                                    headers: _.extend(headers, {'hybris-currency': GlobalData.getCurrencyId()}),
-                                    httpConfig: httpConfig,
-                                    resultx: resultx(headers)
-                                };
-                            });
+                RestangularConfigurer.addFullRequestInterceptor(function(element, operation, route, url, headers, params, httpConfig) {
+                    return {
+                        element: element,
+                        params: params,
+                        headers: _.extend(headers, [{'hybris-currency': GlobalData.getCurrencyId()}, {'Accept-Language': GlobalData.getAcceptLanguages()}]),
+                        httpConfig: httpConfig
+                    };
+                });
             }), 
 
             /** Configures main shipping costs API endpoint.*/
             ShippingCosts: Restangular.withConfig(function(RestangularConfigurer) {
-							RestangularConfigurer.setBaseUrl(siteConfig.apis.shippingCosts.baseUrl);
-                var resultx = function(params){
-                                        console.log(params);
-                            }
-                            RestangularConfigurer.addFullRequestInterceptor(function(element, operation, route, url, headers, params, httpConfig) {
+				RestangularConfigurer.setBaseUrl(siteConfig.apis.shippingCosts.baseUrl);
+                RestangularConfigurer.addFullRequestInterceptor(function(element, operation, route, url, headers, params, httpConfig) {
 
-                                return {
-                                    element: element,
-                                    params: params,
-                                    headers: _.extend(headers, {'hybris-currency': GlobalData.getCurrencyId()}),
-                                    httpConfig: httpConfig,
-                                    resultx: resultx(headers)
-                                };
-                            });
+                    return {
+                        element: element,
+                        params: params,
+                        headers: _.extend(headers, {'hybris-currency': GlobalData.getCurrencyId()}),
+                        httpConfig: httpConfig
+                    };
+                });
             }),
 
             ShippingZones: Restangular.withConfig(function(RestangularConfigurer) {
-                            RestangularConfigurer.setBaseUrl(siteConfig.apis.shippingZones.baseUrl);
-                            RestangularConfigurer.addFullRequestInterceptor(function(element, operation, route, url, headers, params, httpConfig) {
+                RestangularConfigurer.setBaseUrl(siteConfig.apis.shippingZones.baseUrl);
+                RestangularConfigurer.addFullRequestInterceptor(function(element, operation, route, url, headers, params, httpConfig) {
 
-                                return {
-                                    element: element,
-                                    params: params,
-                                    headers: _.extend(headers, {'hybris-currency': GlobalData.getCurrencyId()}),
-                                    httpConfig: httpConfig
-                                };
-                            });
+                    return {
+                        element: element,
+                        params: params,
+                        headers: _.extend(headers, {'hybris-currency': GlobalData.getCurrencyId()}),
+                        httpConfig: httpConfig
+                    };
+                });
             })
-
         };
-
-
     }]);

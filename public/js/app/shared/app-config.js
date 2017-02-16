@@ -23,7 +23,7 @@ angular.module('ds.appconfig', [])
 
         dynamicDomain: function(){
             // Dynamic Domain is generated and replaced by build script, see gruntfile.
-            return /*StartDynamicDomain*/ 'api.us.yaas.io' /*EndDynamicDomain*/;
+            return /*StartDynamicDomain*/ 'api.yaas.io' /*EndDynamicDomain*/;
         },
 
         storeTenant: function(){
@@ -47,18 +47,20 @@ angular.module('ds.appconfig', [])
 
         hybrisScopes: function() {
             // Dynamic ClientId is configured and replaced by build script, see gruntfile.
-            return /*StartClient*/ 'hybris.order_read hybris.order_view_history hybris.order_post hybris.order_create' /*EndClient*/;
+            return /*StartClient*/ 'hybris.tenant=allforoneshop hybris.site_manage hybris.cart_manage hybris.customer_read hybris.customer_create hybris.customer_update hybris.customer_view_profile hybris.customer_edit_profile hybris.order_read hybris.order_view_history hybris.order_post hybris.order_create hybris.order_update hybris.order_read hybris.order_delete' /*EndClient*/;
         },
 
         clientId: function() {
             // Dynamic ClientId is configured and replaced by build script, see gruntfile.
-            return /*StartClientId*/ 'KfJ3DeWFybNcGn5u7dZfpIuRzJ3tPlN4' /*EndClientId*/;
+            return /*StartClientId*/ '' /*EndClientId*/;
+        },
+
+        clientSecret: function(){
+                return '';
         },
 
         redirectURI: function() {
             // Dynamic RedirectURI is configured and replaced by build script, see gruntfile.
             return /*StartRedirectURI*/ 'https://allforoneshop.cfapps.us10.hana.ondemand.com' /*EndRedirectURI*/;
         }
-
-
     });

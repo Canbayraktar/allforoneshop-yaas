@@ -16,7 +16,7 @@
  *  Encapsulates access to the CAAS product API.
  */
 angular.module('ds.products')
-    .factory('ProductSvc', ['PriceProductREST', function(PriceProductREST){
+    .factory('ProductSvc', ['PriceProductREST', 'ProductREST', function(PriceProductREST, ProductREST){
 
         var getProductList = function (parms) {
             return PriceProductREST.Products.all('products').getList(parms);
@@ -33,6 +33,20 @@ angular.module('ds.products')
             },
             getProduct:  function(params) {
               return PriceProductREST.Products.one('products', params.productId).get();
+            },
+
+            getProductById: function(params) {
+               return ProductREST.Products.one('productdetails').one(params).get().then(function(product){
+                    return product;
+               });
+            },
+
+            getProductsByProductIdList : function(productIdList){
+              var products = [];
+              angular.forEach(productIdList, function(productId){
+                products.push(getProductById(productId));
+              });
+              return products;
             }
         };
 }]);

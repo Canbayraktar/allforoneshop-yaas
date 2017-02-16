@@ -37,7 +37,7 @@ angular.module('ds.account')
             },
 
             updateAccount: function(account) {
-                return AuthREST.Customers.all('me').customPUT(account, '');
+                return AuthREST.Customers.all('me').customPUT(account, '').then();
             },
 
             /**
@@ -45,7 +45,6 @@ angular.module('ds.account')
              */
             getAddresses: function() {
                 var addressesPromise = AuthREST.Customers.all('me').all('addresses').getList();
-                console.log(addressesPromise);
                 return addressesPromise;
             },
 

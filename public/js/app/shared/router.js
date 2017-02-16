@@ -202,7 +202,7 @@ angular.module('ds.router', [])
                             return CartSvc.getLocalCart();
                         }],
                         order: ['CheckoutSvc', function (CheckoutSvc) {
-                            return CheckoutSvc.getDefaultOrder('paypal');
+                            return CheckoutSvc.getDefaultOrder('stripe');
                         }],
                         shippingZones: ['ShippingSvc', 'initialized', function (ShippingSvc, initialized) {
                             if (initialized) {
@@ -338,9 +338,8 @@ angular.module('ds.router', [])
                     },
                     resolve: {
                         order: ['$stateParams', 'OrdersREST', function ($stateParams, OrdersREST) {
-                            return OrdersREST.Orders.one('orders', $stateParams.orderId).get()
+                            return OrdersREST.Orders.one('salesorders', $stateParams.orderId).get()
                                 .then(function (result) {
-                                    console.log("Hooopp");
                                     window.scrollTo(0, 0);
                                     result.id = $stateParams.id;
                                     return result;

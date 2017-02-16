@@ -9,9 +9,7 @@ angular.module('ds.wishlist')
                RestangularConfigurer.setBaseUrl(siteConfig.apis.wishlist.baseUrl);
 	           	RestangularConfigurer.setResponseInterceptor(function (data, operation, what, url, response) {
 	                    var headers = response.headers();
-	                    console.log("headers");
 	                    var result = response.data;
-	                    console.log(headers);
 	                    if(result){
 	                        result.headers = headers;
 	                    }

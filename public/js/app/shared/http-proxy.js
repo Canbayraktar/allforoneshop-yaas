@@ -22,8 +22,7 @@ angular.module('ds.httpproxy', [])
                 request: function (config) {
                     document.body.style.cursor = 'wait';
                     // skip html requests as well as anonymous login URL
-                    if (config.url.indexOf('templates') < 0 && config.url.indexOf(siteConfig.apis.customerlogin.baseUrl) < 0) {
-
+                    if (config.url.indexOf('templates') < 0 && config.url.indexOf(siteConfig.apis.customerlogin.baseUrl) < 0 && config.url.indexOf(siteConfig.apis.auth2.baseUrl) < 0) {
                         var token = TokenSvc.getToken().getAccessToken();
                         if (token) {
                             config.headers[settings.headers.hybrisAuthorization] = 'Bearer ' + token;
@@ -34,6 +33,21 @@ angular.module('ds.httpproxy', [])
                             httpQueue.appendBlocked(config, deferred);
                             return deferred.promise;
                         }
+                    }
+
+                    if(config.url.indexOf(siteConfig.apis.customers.baseUrl+"/customers") >= 0){
+                        var token = TokenSvc.getCustomToken().getAccessToken();
+                        config.headers[settings.headers.hybrisAuthorization] = 'Bearer ' + token;
+                    }else if(config.url.indexOf(siteConfig.apis.customers.baseUrl) >= 0){
+                        var token = TokenSvc.getToken().getAccessToken();
+                        config.headers[settings.headers.hybrisAuthorization] = 'Bearer ' + token;
+                    }else if(config.url.indexOf(siteConfig.apis.orders.baseUrl+'/orders') >= 0){
+                        var token = TokenSvc.getCustomToken().getAccessToken();
+                        config.headers[settings.headers.hybrisAuthorization] = 'Bearer ' + token;
+                    }else if(config.url.indexOf(siteConfig.apis.orders.baseUrl+'/salesorders') >= 0){
+                        var token = TokenSvc.getCustomToken().getAccessToken();
+                        config.headers[settings.headers.hybrisAuthorization] = 'Bearer ' + token;
+                        console.log(config.headers);
                     }
                     return config || $q.when(config);
                 },
@@ -111,8 +125,6 @@ angular.module('ds.httpproxy', [])
                                     return $q.reject(response);
                                 }
                             }
-                            
-
                         }
 
                     }
@@ -120,5 +132,3 @@ angular.module('ds.httpproxy', [])
                 }
             };
         }]);
-
-

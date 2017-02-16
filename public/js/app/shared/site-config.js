@@ -107,6 +107,9 @@ angular.module('ds.shared')
                     baseUrl: 'https://' + apiPath + '/hybris/search-algolia/v1/' + tenantId
                 },
 
+                auth2 : {
+                    baseUrl: 'https://' + apiPath + '/hybris/oauth2/v1/'
+                },
                 // ADJUSTED_AS_NEEDED: Added a new endpoint for the Tips Service
                 tipsEndpoint: {
                     // NEEDS_ADJUSTING : Define the end-point of your Tips Service e.g. http://localhost:8080

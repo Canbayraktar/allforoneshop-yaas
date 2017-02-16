@@ -68,6 +68,14 @@ window.app = angular.module('ds.app', [
                 oldHeaders [settings.headers.hybrisUser] = settings.hybrisUser;
                 oldHeaders [settings.headers.hybrisApp] = settings.hybrisApp;
             }
+
+            if(url.indexOf('token') >= 0) {
+                delete $httpProvider.defaults.headers.common[settings.headers.hybrisAuthorization];
+                headers = {};
+                oldHeaders = {};
+                oldHeaders ['Content-Type'] = 'application/x-www-form-urlencoded';
+            }
+            
             return {
                 element: element,
                 params: params,
@@ -78,7 +86,7 @@ window.app = angular.module('ds.app', [
     }])
 
     .run(['$rootScope', '$injector','ConfigSvc', 'AuthDialogManager', '$location', 'settings', 'TokenSvc',
-       'AuthSvc', 'GlobalData', '$state', 'httpQueue', 'editableOptions', 'editableThemes', 'CartSvc', 'EventSvc',
+       'AuthSvc',  'GlobalData', '$state', 'httpQueue', 'editableOptions', 'editableThemes', 'CartSvc', 'EventSvc',
         function ($rootScope, $injector, ConfigSvc, AuthDialogManager, $location, settings, TokenSvc,
                  AuthSvc, GlobalData, $state, httpQueue, editableOptions, editableThemes, CartSvc, EventSvc) {
 
@@ -124,13 +132,16 @@ window.app = angular.module('ds.app', [
             // Implemented as watch, since client-side determination of "logged" in depends on presence of token in cookie,
             //   which may be removed by browser/user
             $rootScope.$watch(function () {
+                //settings.hybrisAuthorization = TokenSvc.getToken().getAccessToken();
                 return AuthSvc.isAuthenticated();
             }, function (isAuthenticated, wasAuthenticated) {
                 $rootScope.$broadcast(isAuthenticated ? 'user:signedin' : 'user:signedout', {new: isAuthenticated, old: wasAuthenticated});
                 GlobalData.user.isAuthenticated = isAuthenticated;
+
             });
 
             $rootScope.$on('site:updated', function () {
+                //settings.hybrisAuthorization = TokenSvc.getToken().getAccessToken();
                 EventSvc.onSiteChange();
             });
 

@@ -12,12 +12,12 @@
 
 'use strict';
 
-angular.module('ds.checkout')
+angular.module('ds.paypalcheckout')
      /** The checkout service provides functions to pre-validate the credit card through Stripe,
       * and to create an order.
       */
-    .factory('CheckoutSvc', ['CheckoutREST', 'OrdersREST', 'TokenSvc', 'ProductSvc', 'StripeJS', 'CartSvc', 'AuthREST', 'settings', '$q', 'GlobalData', 'CartREST',
-        function (CheckoutREST, OrdersREST, TokenSvc, ProductSvc, StripeJS, CartSvc, AuthREST, settings, $q, GlobalData, CartREST) {
+    .factory('CheckoutSvc', ['CheckoutREST', 'StripeJS', 'CartSvc', 'settings', '$q', 'GlobalData', 'CartREST',
+        function (CheckoutREST, CartSvc, settings, $q, GlobalData, CartREST) {
 
         /** CreditCard object prototype */
         var CreditCard = function () {
@@ -33,7 +33,7 @@ angular.module('ds.checkout')
             this.billTo = {};
             this.billTo.country = 'US';
 
-            /*if(paymentId == "paypal"){
+            if(paymentId == "paypal"){
                 this.paymentMethods =[
                     {
                       provider:"paypal",
@@ -43,15 +43,15 @@ angular.module('ds.checkout')
                 this.payment = {
                     paymentId: paymentId,
                 };
-            }else{*/
+            }else{
                 this.payment = {
-                    paymentId: 'stripe',
+                    paymentId: paymentId,
                     customAttributes: {
                         token: ''
                     }
                 };
-            /*}
-            if(paymentId != "paypal")*/
+            }
+            if(paymentId != "paypal")
                 this.creditCard = new CreditCard();
         };
 
@@ -86,13 +86,6 @@ angular.module('ds.checkout')
                 stripeData.exp_month = creditCard.expMonth;
                 stripeData.exp_year = creditCard.expYear;
                 stripeData.cvc = creditCard.cvc;
-
-                order.payment = {
-                    paymentId: "stripe",
-                    customAttributes: {
-                        token: ''
-                    }
-                };
                 /* jshint ignore:end */
 
                 var self = this;
@@ -247,8 +240,8 @@ angular.module('ds.checkout')
                     "mode": "sandbox",
                     "totalAmount": cart.totalPrice.amount,
                     "currency": cart.totalPrice.currency,
-                    "successUrl": settings.pageUrl + "/#!/success?cartId="+cart.id,
-                    "cancelUrl": settings.pageUrl + "/#!/cancel"
+                    "successUrl": "http://localhost:9000/#!/success?cartId="+cart.id,
+                    "cancelUrl": "http://localhost:9000/#!/cancel"
                 };
                             
                 CheckoutREST.CheckoutWithPaypal.all('pay').customPOST(paypalValues).then(function(result){
@@ -327,107 +320,23 @@ angular.module('ds.checkout')
 
                 // Will be submitted as "hybris-user" request header
                 settings.hybrisUser = order.account.email;
-                
-                 return OrdersREST.Orders.all('orders').post(newOrder);
-                //return CheckoutREST.Checkout.all('checkouts').all('order').post(newOrder);
-            },
-
-            newCreateOrderForPayPal: function(order, token) {
-                var self = this;
-                var Order = function () {};
-                var newOrder = new Order();
-                order = angular.fromJson(sessionStorage.getItem("orderForPaypal"));
-                var cartX = angular.fromJson(sessionStorage.getItem("cartForPaypal"));;//angular.fromJson(sessionStorage.getItem("cartForPaypal"));
-
-                newOrder.customer = order.account;
-                newOrder.customer.customerId = order.cart.customerId;
-                newOrder.customer.id = order.cart.customerId;
-                newOrder.currency = order.cart.currency;
-                newOrder.payments = [];
-
-                newOrder.billingAddress = {};
-                newOrder.billingAddress.contactName = order.shipTo.contactName;
-                newOrder.billingAddress.companyName = order.shipTo.companyName;
-                newOrder.billingAddress.street = order.shipTo.address1;
-                newOrder.billingAddress.extraLine1 = order.shipTo.address2;
-                newOrder.billingAddress.city = order.shipTo.city;
-                newOrder.billingAddress.state = order.shipTo.state;
-                newOrder.billingAddress.zipCode = order.shipTo.zipCode;
-                newOrder.billingAddress.country = order.shipTo.country;
-                newOrder.billingAddress.contactPhone = order.shipTo.contactPhone;
-                
-                newOrder.shippingAddress = {};
-                newOrder.shippingAddress.contactName = order.shipTo.contactName;
-                newOrder.shippingAddress.companyName = order.shipTo.companyName;
-                newOrder.shippingAddress.street = order.shipTo.address1;
-                newOrder.shippingAddress.extraLine2 = order.shipTo.address2;
-                newOrder.shippingAddress.city = order.shipTo.city;
-                newOrder.shippingAddress.state = order.shipTo.state;
-                newOrder.shippingAddress.zipCode = order.shipTo.zipCode;
-                newOrder.shippingAddress.country = order.shipTo.country;
-                newOrder.shippingAddress.contactPhone = order.shipTo.contactPhone;
-                
-                newOrder.subTotalPrice = order.cart.subTotalPrice.amount;
-                newOrder.totalPrice = order.cart.totalPrice.amount;
-
-                var itemsProcessed = 0;
-                var orderDef = $q.defer();
-                newOrder.entries = [];
-                cartX.items.forEach((item, index, array) => {
-                    itemsProcessed++;
-                    var prod = {};
-                    prod.product = {}; 
-                    prod.id = item.product.product.id;
-                    prod.amount = item.quantity;
-                    prod.unitPrice = item.price.effectiveAmount;
-                    prod.totalPrice = item.itemPrice.amount;
-                    prod.product.name = item.product.product.name;
-                    prod.product.description = item.product.product.description;
-                    prod.product.sku = item.product.product.code;
-                    prod.product.images = {};
-                    prod.product.images = item.product.product.media;
-                    newOrder.entries.push(prod);
-                    if(itemsProcessed === array.length) {
-                        itemsProcessed = -5;
-                        orderDef.resolve();
-                    };
-                });
-
-                
-
-                var payments = {
-                        status: "SUCCESS",
-                        method: "PAYPAL",
-                        paymentResponse: "",
-                        paidAmount: newOrder.totalPrice,
-                        currency: newOrder.currency
-                    };
-
-                newOrder.payments.push(payments);
-                var orderComplate = $q.defer();
-                if(itemsProcessed == -5){
-                    $q.all(orderDef).then(function(){
-                        return OrdersREST.Orders.all('orders').post(newOrder,undefined, undefined, {'Content-Type': 'application/json', 'hybris-user' : settings.hybrisUser, 'Authorization' : TokenSvc.getCustomToken().getAccessToken()}).then(function (order){
-                            CartSvc.removeCart();
-                            orderComplate.resolve(order);
-                        });
-                    });
-                }
-                return orderComplate.promise;
+                return CheckoutREST.Checkout.all('checkouts').all('order').post(newOrder);
             },
 
             complateOrderWithPaypal : function(order, token){
                 var self = this;
                 var deferred = $q.defer();
                 try {
-                    $q.all(self.newCreateOrderForPayPal(order, token)).then(
+                    self.createOrderForPayPal(order, token).then(
                                 // success handler
                                 function (order) {
                                     deferred.resolve(order);
                                 },
                                 // error handler
                                 function(errorResponse){
-                                    var errMsg = '';                                    if(errorResponse.status === 500) {
+                                    var errMsg = '';
+
+                                    if(errorResponse.status === 500) {
                                         errMsg = 'Cannot process this order because the system is unavailable. Try again at a later time.';
                                     } else {
                                         errMsg = 'Order could not be processed.';

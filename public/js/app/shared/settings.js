@@ -27,9 +27,14 @@ angular.module('ds.shared')
         roleSeller: 'seller',
         // cookie name
         accessCookie: 'auth.user',
+        customAccessCookie: 'auth.custom.user',
         languageCookie: 'languageCookie',
         siteCookie: 'siteCookie',
         consentReferenceCookie: 'consentReferenceCookie',
+        hybrisAuthorization : '',
+        pageUrl : 'https://allforoneshop.cfapps.us10.hana.ondemand.com',
+        clientPaypalKey: '',
+        clientPaypalSecret: '',
 
         // header keys
         headers: {
@@ -44,6 +49,9 @@ angular.module('ds.shared')
             hybrisRoles: 'hybris-roles',   //TODO deprecated, can refactor out.
             hybrisApp: 'hybris-app',       //TODO deprecated, can refactor out.
             language: 'accept-language',
+            grantType: 'grant_type',
+            tokenType: 'token_type',
+
 
             hybrisAuthorization: 'Authorization',
             paging: {

@@ -21,6 +21,8 @@ angular.module('ds.orders')
             Orders: Restangular.withConfig(function(RestangularConfigurer) {
                 RestangularConfigurer.setResponseInterceptor(function (data, operation, what, url, response) {
                     var headers = response.headers();
+                    console.log("headers");
+                    console.log(headers);
                     
                     var result = response.data;
                     if(result){

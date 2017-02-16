@@ -16,13 +16,13 @@
  *  Encapsulates access to the "order" service.
  */
 angular.module('ds.confirmation')
-    .factory('OrderDetailSvc', ['OrderREST', '$q', function (OrderREST, $q) {
+    .factory('OrderDetailSvc', ['OrderREST', 'TokenSvc', 'settings', '$q', function (OrderREST, TokenSvc, settings, $q) {
 
         /** Issues a GET request for the 'order' resource
          * @param orderId
          */
         var getOrderDetails = function (orderId) {
-            return OrderREST.Orders.one('orders', orderId).get();
+            return OrderREST.Orders.one('salesorders', orderId).get('',undefined, undefined, {'hybris-user' : settings.hybrisUser, 'Authorization' : "Bearer " + TokenSvc.getToken().getAccessToken()});
         };
 
         return {

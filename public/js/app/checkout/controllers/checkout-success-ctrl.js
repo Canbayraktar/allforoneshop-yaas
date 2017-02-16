@@ -37,7 +37,6 @@ angular.module('ds.checkout')
         function ($rootScope, $scope, $stateParams, $location, $anchorScroll, CheckoutSvc, cart, order, $state, $modal, AuthSvc, AccountSvc, AuthDialogManager, GlobalData,  ShippingSvc, shippingZones, $q, CartSvc, $timeout, settings) {
 
             $scope.user = GlobalData.user;
-            console.log($stateParams.token);
             order = sessionStorage.getItem("orderForPaypal");
             
             /** Show error message after failed checkout, re-enable the submit button and reset any wait cursor/splash screen.
@@ -62,8 +61,8 @@ angular.module('ds.checkout')
             var checkoutSuccessHandler = function goToConfirmationPage(order) {
 
                 var piwikOrderDetails = {
-                    orderId: order.orderId,
-                    checkoutId: order.checkoutId,
+                    orderId: order.id,
+                    checkoutId: order.id,
                     cart: order.cart
                 };
                 /**
@@ -71,15 +70,15 @@ angular.module('ds.checkout')
                  * is the case we still want to show the user the confirmation page, but instead of displaying
                  * order details, it will let the user know that the checkout passed but the order was not placed.
                  */
-                var entity = order.orderId ? 'order' : 'checkout';
-                var id = order.orderId ? order.orderId : order.checkoutId;
+                var entity = order.id ? 'order' : 'checkout';
+                var id = order.id;// ? order.id : order.id;
                 //Send data to piwik
                 $rootScope.$emit('order:placed', piwikOrderDetails);
 
                 //Reset cart
                 CheckoutSvc.resetCart();
 
-                modal.close();
+                //modal.close();
                 $state.go('base.confirmation', {id: id, entity: entity});
             };
 
@@ -90,30 +89,10 @@ angular.module('ds.checkout')
             };
 
             var placeOrderWithPaypal = function () {
-                    var order = sessionStorage.getItem("orderForPaypal");
-                    $scope.order = angular.fromJson(order);
-                    var result = CheckoutSvc.complateOrderWithPaypal($scope.order, $stateParams.token).then(checkoutSuccessHandler, checkoutErrorHandler);
-                    console.log("complated ? ");
-                    console.log("order Id : " + $scope.order.orderId);
-
-                    var piwikOrderDetails = {
-                    orderId: order.orderId,
-                    checkoutId: order.checkoutId,
-                    cart: $scope.cart
-                };
-                /**
-                 * It is possible for a checkout to go through, but the order placement itself will fail.  If this
-                 * is the case we still want to show the user the confirmation page, but instead of displaying
-                 * order details, it will let the user know that the checkout passed but the order was not placed.
-                 */
-                var entity = order.orderId ? 'order' : 'checkout';
-                var id = order.orderId ? order.orderId : order.checkoutId;
-                //Send data to piwik
-                $rootScope.$emit('order:placed', piwikOrderDetails);
-
-                //Reset cart
-                CheckoutSvc.resetCart();
-                $state.go('base.confirmation', {id: id, entity: entity});
+                var order = sessionStorage.getItem("orderForPaypal");
+                $scope.order = angular.fromJson(order);
+                settings.hybrisUser = $scope.order.account.email;
+                CheckoutSvc.complateOrderWithPaypal($scope.order, $stateParams.token).then(checkoutSuccessHandler, checkoutErrorHandler);
             };
             placeOrderWithPaypal();
 

@@ -117,9 +117,6 @@ angular.module('ds.auth')
                         }
                     });
                 }
-
             }
-
-
         };
     }]);
